@@ -6,9 +6,16 @@ public class CardConvRev {
         char[]temp = new char[d.length];    // 아랫자리 순서로 넣어둘 임시 배열 선언
         String dchar = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
+        System.out.println(r + "|    " + x);
         do{
+            System.out.println(" + -------");
             temp[digits++] = dchar.charAt(x % r);   // 나머지를 임시 배열에 선언, 아랫자리 순서대로
             x /= r;     // 몫을 x에 다시 대입
+            if(x == 0){
+                System.out.println("      " + x + " ... " + temp[digits - 1]);
+            }else{
+                System.out.println(r + "|    " + x + " ... " + temp[digits - 1]);
+            }
         }while(x != 0);
 
         // 아랫자리 순서에서 윗자리 순서로 변환
