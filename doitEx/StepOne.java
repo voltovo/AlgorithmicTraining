@@ -1,3 +1,4 @@
+package doitEx;
 import java.util.Scanner;
 
 public class StepOne {
