@@ -2,8 +2,12 @@ package programmersEx;
 
 public class ArrayAvg {
     public static void main(String[] args) {
-        int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        System.out.println("배열의 평균 값 : " + solution(numbers));
+        int a = 3;
+        int b = 2;
+        Double c = new Double(a);
+        Double d = new Double(b);
+        double result = Double.valueOf(a) / Double.valueOf(b);
+        System.out.println(result);
     }
 
     private static double solution(int[] numbers) {
