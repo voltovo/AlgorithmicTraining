@@ -16,12 +16,11 @@ public class CuttingArray {
         int[] answer = {};
         int size = num2 - num1 + 1;
         answer = new int[size];
-        int index = 0;
-        for (int i = 0; i < numbers.length; i++) {
-            if (i >= num1 && i <= num2) {
-                answer[index] = numbers[i];
-                index++;
-            }
+
+        // 배열에 변수를 일반적이니 한 개에서 두 개로 늘려서 처리
+        for (int i = num1, j = 0; i < num2 + 1; i++) {
+            answer[j] = numbers[i];
+            j++;
         }
         return answer;
     }
