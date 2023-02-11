@@ -13,36 +13,23 @@ public class AdditionOfDenominator {
     }
 
     private static int[] solution(int numer1, int denom1, int numer2, int denom2) {
-        int[] answer = {};
-        // 최대 공약수
-        int max = 0;
 
-        for (int i = 1; i <= denom1 && i <= denom2; i++) {
-            if (denom1 % i == 0 && denom2 % i == 0) {
-                max = i;
+        // 공통 분수 값 구하기
+        int denominator = denom1 * denom2;
+        int numerator1 = numer1 * denom2;
+        int numerator2 = numer2 * denom1;
+        int totalNumerator = numerator1 + numerator2;
+
+        // 분자와 분모의 최대공약수를 찾아서 기약 분수로 만들기
+        for(int i = denominator; i <= 1; i--){
+            if(totalNumerator % i ==0 && denominator % i == 0){
+                denominator /= i;
+                totalNumerator /= i;
             }
         }
-        // 분모의 최소 공배수
-        int min = (denom1 * denom2) / max;
-        // 첫번째 분자에 곱해야 하는 수
-        int multiNum1 = min / denom1;
-        // 두번째 분자에 곱해야 하는 수
-        int multiNum2 = min / denom2;
 
-        answer = new int[2];
+        int[] answer = {totalNumerator, denominator};
 
-        int firstNumerator = numer1 * multiNum1 + numer2 * multiNum2;
-        int firstDenominator = min;
-
-        // 구한 분수를 기약분수로 변환
-        int gcd = 0;
-        for (int i = 1; i <= firstDenominator; i++) {
-            if (firstNumerator % i == 0 && firstDenominator % i == 0) {
-                gcd = i;
-            }
-        }
-        answer[0] = firstNumerator / gcd;
-        answer[1] = firstDenominator / gcd;
         return answer;
     }
 }
