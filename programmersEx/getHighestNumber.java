@@ -8,7 +8,7 @@ public class getHighestNumber {
         System.out.println("제일 많은 값은 = " + solution(array));
     }
 
-    private static int solution(int[] array) {
+    public static int solution(int[] array) {
         int answer = 0;
         int maxCount = 0;
         // 숫자당 카운팅 저장할 맵 선언
@@ -29,7 +29,6 @@ public class getHighestNumber {
             // 맵에 기록
             numberMap.put(number, count);
         }
-
 
         return answer;
     }
