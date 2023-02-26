@@ -1,52 +1,35 @@
 package programmersEx;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
 
 public class getHighestNumber {
     public static void main(String[] args) {
-        int[] array = {1,1,2,2};
+        int[] array = {1,2,1,2};
         System.out.println("제일 많은 값은 = " + solution(array));
     }
 
     private static int solution(int[] array) {
         int answer = 0;
-        HashMap<Integer, Integer> numberMap = new HashMap<Integer, Integer>();
+        int maxCount = 0;
+        // 숫자당 카운팅 저장할 맵 선언
+        HashMap<Integer, Integer> numberMap = new HashMap<>();
 
-        // 배열의 수 카운팅
-        for (int number : array) {
-            if (numberMap.containsKey(number)) {
-                numberMap.put(number, numberMap.get(number) + 1);
-            } else {
-                numberMap.put(number, 1);
+        for(int number : array){
+            // 맵에 key값이 있으면 +1 없으면 0
+            int count = numberMap.getOrDefault(number, 0) + 1;
+
+            // 제일 많은 수
+            if(count > maxCount){
+                maxCount = count;
+                answer = number;
+            }else if(count == maxCount){
+                // 맵에 있는 key값에서 카운팅 한 제일 많은 수가 중복되면 -1
+                answer = -1;
             }
+            // 맵에 기록
+            numberMap.put(number, count);
         }
 
-        // 제일 많은 횟수
-        int highestValue = 0;
-        // 카운팅 된 맵에서 제일 큰 수 구하기
-        List<Integer> highestKeyList = new ArrayList<>();
-        for (Entry<Integer, Integer> entrySet : numberMap.entrySet()) {
-            if (highestValue < entrySet.getValue()) {
-                highestValue = entrySet.getValue();
-            }
-        }
-
-        // 제일 큰 수가 몇개 있는지 구하기
-        for(Entry<Integer, Integer> entrySet : numberMap.entrySet()){
-            if(highestValue == entrySet.getValue()){
-                highestKeyList.add(entrySet.getKey());
-            }
-        }
-
-        // 제일 큰 수가 두개 이상이면 -1 반환
-        if(highestKeyList.size() > 1){
-            answer = -1;
-        }else{
-            answer = highestKeyList.get(0);
-        }
 
         return answer;
     }
