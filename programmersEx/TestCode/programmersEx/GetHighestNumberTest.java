@@ -1,9 +1,8 @@
-package programmersEx.TestCode;
+package programmersEx;
 
 import static junit.framework.TestCase.assertEquals;
 
 import org.junit.Test;
-import programmersEx.getHighestNumber;
 
 public class GetHighestNumberTest {
     @Test
