@@ -10,27 +10,21 @@ public class TreatmentOrdering {
     }
 
     public static int[] solution(int[] emergency) {
-        int[] answer = emergency.clone();
-        int[] tempArray = emergency.clone();
+        int[] answer = new int[emergency.length];
 
-        // emergency 큰 순서로 정렬
-        for(int i = 0; i < emergency.length; i++){
-            for(int j = i + 1; j < emergency.length; j++){
+        for(int i = 0; i < answer.length; i++){
+            if(answer[i] != 0){
+                continue;
+            }
+            // 한바퀴 돌고 idx 리셋
+            int idx = 1;
+            for(int j = 0; j < answer.length; j++){
+                // 기준이되는 수 보다 크면 카운팅
                 if(emergency[i] < emergency[j]){
-                    int temp = emergency[i];
-                    emergency[i] = emergency[j];
-                    emergency[j] = temp;
+                    idx++;
                 }
             }
-        }
-
-        // answer 배열에서 emergency 배열 값의 index 구하기
-        for(int i = 0; i < tempArray.length; i++ ){
-            for(int j = 0; j < emergency.length; j++){
-                if(tempArray[i] == emergency[j]){
-                    answer[i] = j + 1;
-                }
-            }
+            answer[i] = idx;
         }
         return answer;
     }
