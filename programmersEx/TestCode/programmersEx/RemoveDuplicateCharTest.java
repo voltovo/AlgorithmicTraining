@@ -1,7 +1,6 @@
 package programmersEx;
 
 import static junit.framework.TestCase.assertEquals;
-
 import org.junit.Test;
 
 public class RemoveDuplicateCharTest {
