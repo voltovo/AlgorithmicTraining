@@ -1,25 +1,18 @@
 package programmersEx;
 
+import java.util.Arrays;
+
 public class AtoB {
 
     public static int solution(String before, String after){
-        int answer = 0;
-        StringBuffer transferString = new StringBuffer(after);
-        // before 문자열 길이만큼 반복
-        for(int i = 0; i < before.length(); i++){
-            // before 문자열에 있는 문자가 transferString 문자열에 있으면
-            int charIndex = transferString.indexOf(Character.toString(before.charAt(i)));
-            if(charIndex != -1){
-                // transferString 문자열에서 해당 문자를 제거
-                transferString.deleteCharAt(charIndex);
-            }
-        }
+        // 문자열을 char 배열로 변환
+        char[] a = before.toCharArray();
+        char[] b = after.toCharArray();
+        // 배열을 정렬
+        Arrays.sort(a);
+        Arrays.sort(b);
 
-        // transferString 문자열 길이가 0이면 1 아니면 0
-        if(transferString.length() == 0){
-            answer = 1;
-        }
-
-        return answer;
+        // 정렬된 배열을 문자열로 변환 후 비교
+        return new String(a).equals(new String(b)) ? 1 :0;
     }
 }
