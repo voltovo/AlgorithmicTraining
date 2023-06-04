@@ -1,22 +1,25 @@
 package programmersEx;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 public class ThrowBall {
     public static int solution(int [] numbers, int k){
-        // 배열 길이 정하기 위해서 k * 2
-        int limit = k * 2;
-        int [] newNumbers = new int[limit];
-        // newNumbers 범위 넘어 가지 않게 하기 위해서 카운팅
-        int index = 0;
-        while(index < limit){
-            for(int num : numbers){
-                newNumbers[index] = num;
-                index++;
-                if(index == limit){
-                    break;
-                }
-            }
+        int answer = 0;
+
+        Queue<Integer> queue = new LinkedList<>();
+        for(int num : numbers) queue.add(num);
+
+        // k번째 순서까지 반복
+        int cnt = 1;
+        while(cnt !=k){
+            // 큐에서 두 개를 빼서 다시 넣어준다.
+            // 사람을 한명 건너 뛰고 던지기 때문에 두 번 빼준다.
+            queue.add(queue.poll());
+            queue.add(queue.poll());
+            cnt++;
         }
-        // 새로운 배열의 뒤에서 두번째 값 리턴
-        return newNumbers[limit - 2];
+        answer = queue.poll();
+        return answer;
     }
 }
