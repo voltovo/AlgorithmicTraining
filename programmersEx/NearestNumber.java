@@ -1,19 +1,21 @@
 package programmersEx;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 
 public class NearestNumber {
     public static int solution(int[] array, int n){
-        Map<Integer, Integer> map = new HashMap<>(array.length);
-        for(int num : array){
-            int diff = Math.abs(num - n);
-            map.put(num, diff);
+        int answer = 0;
+        // 오른차순으로 정렬
+        Arrays.sort(array);
+        for(int i = 1; i < array.length; i++){
+            // n과 array[0]의 차이가 n과 array[i]의 차이보다 크면 array[0]을 array[i]로 바꿈
+            if(Math.abs(n - array[0]) > Math.abs(n - array[i])){
+                // 더 가까운 수를 바꿔줌
+                array[0] = array[i];
+            }
         }
 
-        return map.keySet().stream()
-            .min(Comparator.comparing(map::get).thenComparingInt(a -> (int) a))
-            .orElse(null);
+        // for문 종료후 가장 가까운 수가 array[0]에 저장되어 있음
+        return array[0];
     }
 }

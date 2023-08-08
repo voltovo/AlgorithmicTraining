@@ -24,7 +24,8 @@ public class NearestNumberTest {
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
             {new int[]{3, 10, 28}, 20, 28},
-            {new int[]{10, 11, 12}, 13, 12}
+            {new int[]{10, 11, 12}, 13, 12},
+            {new int[]{2, 4, 7}, 3, 2}
         });
     }
     @Test
