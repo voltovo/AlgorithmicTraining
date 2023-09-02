@@ -3,23 +3,14 @@ package programmersEx;
 public class AddNumber {
     public static int solution(String my_string){
         int answer = 0;
-        StringBuilder sb = new StringBuilder();
-        for(char c : my_string.toCharArray()){
-            // number인 경우
-            if(Character.isDigit(c)){
-                sb.append(c);
-            }else{
-                // number가 아닌 경우
-                if(sb.length() > 0){
-                    answer += Integer.parseInt(sb.toString());
-                    sb.setLength(0);
-                }
-            }
-        }
+        // 숫자만 남기고 모두 공백으로 치환
+        String[] strArray = my_string.replaceAll("[a-zA-Z]", " ").split(" ");
 
-        if(sb.length() > 0){
-            answer += Integer.parseInt(sb.toString());
-            sb.setLength(0);
+        for(String str : strArray){
+            // 공벽을 준 경우 ""이 들어가기 때문에 이를 방지하기 위해 if문을 추가
+            if(!str.equals("")){
+                answer += Integer.parseInt(str);
+            }
         }
 
         return answer;
