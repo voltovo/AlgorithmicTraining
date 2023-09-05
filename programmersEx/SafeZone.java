@@ -12,7 +12,7 @@ public class SafeZone {
                 if (board[i][j] == 0) {
                     // 안전 여부
                     boolean isSafe = true;
-                    // 주변 8방향을 확인
+                    // 주변 8방향을 check
                     for (int dx = -1; dx <= 1; dx++) {
                         for (int dy = -1; dy <= 1; dy++) {
                             int newX = i + dx;
