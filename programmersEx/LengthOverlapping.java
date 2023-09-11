@@ -1,58 +1,30 @@
 package programmersEx;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class LengthOverlapping {
 
     public static int solution(int[][] lines) {
         int answer = 0;
-        // 2차원 배열 정렬
-        for (int i = 0; i < lines.length; i++) {
-            for (int j = i + 1; j < lines.length; j++) {
-                if (lines[i][0] > lines[j][0]) {
-                    int[] temp = lines[i];
-                    lines[i] = lines[j];
-                    lines[j] = temp;
-                }
+        HashMap<Integer, Integer> lineMap = new HashMap<>();
+
+        for(int[] line : lines){
+            // 시작점
+            int from = Math.min(line[0], line[1]);
+            // 끝점
+            int to = Math.max(line[0], line[1]);
+
+            // 시작부터 끝까지 1씩 증가하면서 해당하는 key값에 value를 1씩 증가시킨다.
+            for (int i = from; i < to; i++) {
+                lineMap.put(i, lineMap.getOrDefault(i, 0) + 1);
             }
         }
 
-        // 겹치는 구간을 기록할 배열
-        List<int[]> overlapping = new ArrayList<>();
-        // 2차원 배열 겹치는 길이 계산
-        for (int i = 0; i < lines.length; i++) {
-            int min = 0;
-            int max = 0;
-            for (int j = i + 1; j < lines.length; j++) {
-                if (lines[i][1] > lines[j][0] && lines[i][0] < lines[j][1]) {
-                    if (lines[i][0] < lines[j][0] && lines[i][1] > lines[j][1]) {
-                        min = lines[j][0];
-                        max = lines[j][1];
-                        answer += max - min;
-                        overlapping.add(new int[]{min, max});
-                    } else {
-                        min = lines[j][0];
-                        max = lines[i][1] > lines[j][1] ? lines[j][1] : lines[i][1];
-                        answer += max - min;
-                        overlapping.add(new int[]{min, max});
-                    }
-                }
+        // value값이 2 이상인 경우가 중복되는 부분이다.
+        for(int value : lineMap.values()){
+            if(value >= 2){
+                answer++;
             }
-
-        }
-
-        for (int i = 0; i < overlapping.size() - 1; i++) {
-            if (overlapping.get(i)[1] > overlapping.get(i + 1)[0]
-                && overlapping.get(i)[0] < overlapping.get(i + 1)[1]
-                && overlapping.get(i)[1] < overlapping.get(i + 1)[1]) {
-                answer -= overlapping.get(i)[1] - overlapping.get(i + 1)[0];
-            } else if(overlapping.get(i)[1] > overlapping.get(i + 1)[0]
-                && overlapping.get(i)[0] < overlapping.get(i + 1)[1]
-                && overlapping.get(i)[1] >= overlapping.get(i + 1)[1]){
-                answer -= overlapping.get(i + 1)[1] - overlapping.get(i + 1)[0];
-            }
-
         }
         return answer;
     }
