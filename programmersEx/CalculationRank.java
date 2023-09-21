@@ -1,27 +1,26 @@
 package programmersEx;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 public class CalculationRank {
     public static int[] solution(int[][] score) {
-        double[] averageArray = new double[score.length];
-        int[] rankArray = new int[averageArray.length];
+        List<Integer> scoreList = new ArrayList<>();
+        for (int[] t : score) {
+            // 평균의 순서나 점수를 모두 더하나 순위를 정의하는데 별반 다른게 없음
+            scoreList.add(t[0] + t[1]);
+        }
+        // 높은 점수 순서대로 정렬
+        scoreList.sort(Comparator.reverseOrder());
 
-        // 평균 구하기
+        int[] answer = new int[score.length];
         for (int i = 0; i < score.length; i++) {
-            double average = (double) (score[i][0] + score[i][1]) / 2;
-            averageArray[i] = average;
+            // 인덱스 번호 + 1 로 등수를 추출
+            // indexOf를 하는 경우 같은 점수가 있어도 적은 인덱스가 추출되고 +1을 하기 때문에 ...
+            // 1등이 두번 나오고 3등이 나오는 형식 가능 {1,1,3}
+            answer[i] = scoreList.indexOf(score[i][0] + score[i][1]) + 1;
         }
-
-        for (int i = 0; i < averageArray.length; i++) {
-            // 등수 카운팅
-            int rank = 1;
-            for (int j = 0; j < averageArray.length; j++) {
-                if (averageArray[j] > averageArray[i]) {
-                    rank++;
-                }
-            }
-            rankArray[i] = rank;
-        }
-
-        return rankArray;
+        return answer;
     }
 }
