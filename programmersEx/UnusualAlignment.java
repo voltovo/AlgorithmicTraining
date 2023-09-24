@@ -35,6 +35,24 @@ public class UnusualAlignment {
                 }
             }
         }
+
+        // Integer[] numArray = new Integer[numlist.length];
+
+        // for (int i = 0; i < numlist.length; i++) {
+        // numArray[i] = numlist[i];
+        // }
+
+        // Arrays.sort(numArray,
+        // Comparator.comparingInt((Integer num) -> Math.abs(num -
+        // n)).thenComparingInt(num -> num * -1));
+
+        // int[] answer = new int[numArray.length];
+
+        // for (int i = 0; i < numArray.length; i++) {
+        // answer[i] = numArray[i];
+        // }
+
+        // return answer;
         return answer;
     }
 }
