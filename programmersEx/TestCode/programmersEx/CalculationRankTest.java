@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import programmersEx.CalculationRank;
+
 @RunWith(Parameterized.class)
 public class CalculationRankTest {
     private int[][] score;
