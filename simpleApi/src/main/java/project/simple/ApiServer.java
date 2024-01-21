@@ -10,7 +10,7 @@ public class ApiServer {
     private static final int DEFAULT_PORT = 4040;
 
     public static void main(String[] args) {
-        httpServer server = null;
+        Server server = null;
         // server start log
         System.out.println("[" + getTime() + "] [SIMPLE HTTP SERVER] [START]");
         // server end log
@@ -19,7 +19,7 @@ public class ApiServer {
         };
         try {
             // server create
-            server = new httpServer(DEFAULT_SERVER_IP, DEFAULT_PORT);
+            server = new Server(DEFAULT_SERVER_IP, DEFAULT_PORT);
             server.start();
 
             Runtime.getRuntime().addShutdownHook(new Thread(shutdown));
@@ -34,10 +34,12 @@ public class ApiServer {
             // 0 : 즉시 종료
             server.stop(0);
         }
-
-
     }
 
+    /**
+     * 현재 날짜 시간
+     * @return
+     */
     private static String getTime() {
         // 현재 날짜와 시간 가져오기
         LocalDateTime currentTime = LocalDateTime.now();
