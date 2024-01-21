@@ -4,6 +4,7 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,6 +13,10 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -21,7 +26,10 @@ public class Server {
 
     // 네트워크 소켓에서 연결을 받아들일 수 있는 대기 큐의 크기
     // 기본 값 = 리눅스 128, 윈도우 5
-    private final int DEFAULT_BACKLOG = 0;
+    private static final int DEFAULT_BACKLOG = 0;
+    private static final int SUCCESS_STATUS_CODE = 200;
+    private static final int ERROR_STATUS_CODE = 500;
+    private static final String SAMPLE_DATA_PATH = "src/main/resources/data/sampleData.json";
     private HttpServer server = null;
 
     public Server(String ip, int port) throws IOException {
@@ -68,8 +76,7 @@ public class Server {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            OutputStream responseBody = exchange.getResponseBody();
-            try {
+            try (OutputStream responseBody = exchange.getResponseBody()){
                 // 응답 메시지 작성
                 JSONObject responseJson = new JSONObject();
                 responseJson.put("Method", exchange.getRequestMethod());
@@ -78,14 +85,10 @@ public class Server {
 
                 // 응답 메시지 전달
                 responseBody.write(makeSuccessResponseHeader(exchange, responseJson));
-                responseBody.close();
             } catch (IOException e) {
                 e.printStackTrace();
                 // 서버 오류 에서 메시지 전달
-                responseBody.write(makeErrorResponseHeader(exchange));
-                if (responseBody != null) {
-                    responseBody.close();
-                }
+                makeErrorResponseHeader(exchange);
             } finally {
                 exchange.close();
             }
@@ -99,8 +102,8 @@ public class Server {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            OutputStream responseBody = exchange.getResponseBody();
-            try (FileReader reader = new FileReader("src/main/resources/data/sampleData.json")) {
+            try (FileReader reader = new FileReader(SAMPLE_DATA_PATH);
+                OutputStream responseBody = exchange.getResponseBody()) {
                 // 응답 메시지 작성
                 JSONParser parser = new JSONParser();
                 JSONArray sampleDataJson = (JSONArray) parser.parse(reader);
@@ -111,14 +114,10 @@ public class Server {
 
                 // 응답 메시지 전달
                 responseBody.write(makeSuccessResponseHeader(exchange, responseJson));
-                responseBody.close();
             } catch (IOException | ParseException e) {
                 e.printStackTrace();
                 // 서버 오류 에서 메시지 전달
-                responseBody.write(makeErrorResponseHeader(exchange));
-                if (responseBody != null) {
-                    responseBody.close();
-                }
+                makeErrorResponseHeader(exchange);
             } finally {
                 exchange.close();
             }
@@ -132,8 +131,7 @@ public class Server {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            OutputStream responseBody = exchange.getResponseBody();
-            try {
+            try (OutputStream responseBody = exchange.getResponseBody()){
                 String userId = getUserId(exchange);
                 JSONObject userInfoJson = getUserInfo(userId);
 
@@ -149,14 +147,10 @@ public class Server {
 
                 // 응답 메시지 전달
                 responseBody.write(makeSuccessResponseHeader(exchange, responseJson));
-                responseBody.close();
             } catch (IOException e) {
                 e.printStackTrace();
                 // 서버 오류 에서 메시지 전달
-                responseBody.write(makeErrorResponseHeader(exchange));
-                if (responseBody != null) {
-                    responseBody.close();
-                }
+                makeErrorResponseHeader(exchange);
             } finally {
                 exchange.close();
             }
@@ -171,19 +165,18 @@ public class Server {
      */
     private JSONObject getUserInfo(String userId) {
         JSONObject userInfoJson = new JSONObject();
-        try (FileReader reader = new FileReader("src/main/resources/data/sampleData.json")) {
-            // 데이터 검색
+        Path filePath = Paths.get(SAMPLE_DATA_PATH);
+        try (BufferedReader reader = Files.newBufferedReader(filePath, StandardCharsets.UTF_8)) {
             JSONParser parser = new JSONParser();
             JSONArray sampleDataJson = (JSONArray) parser.parse(reader);
 
-            for (Object data : sampleDataJson) {
-                if (data instanceof JSONObject) {
-                    JSONObject dataJson = (JSONObject) data;
-                    if (String.valueOf(dataJson.get("user_id")).equals(userId)) {
-                        return dataJson;
-                    }
-                }
-            }
+            // 데이터 검색
+            return (JSONObject) sampleDataJson.stream()
+                .filter(data -> data instanceof JSONObject)
+                .map(data -> (JSONObject)data)
+                .filter(dataJson -> userId.equals(String.valueOf(((JSONObject) dataJson).get("user_id"))))
+                .findFirst()
+                .orElse(userInfoJson);
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
@@ -203,23 +196,25 @@ public class Server {
      * @return
      */
     private byte[] makeErrorResponseHeader(HttpExchange exchange) {
-        // 응답 메시지를 바이트 단위로 가공
+        // error 메시지 작성
         JSONObject errorJson = new JSONObject();
         errorJson.put("Message", "Server Error");
 
-        ByteBuffer buffer = Charset.forName("UTF-8").encode(errorJson.toJSONString());
-        int contentLength = buffer.limit();
-        byte[] content = new byte[contentLength];
-        buffer.get(content, 0, contentLength);
+        // 응답 메시지를 바이트 단위로 가공
+        byte[] content = errorJson.toJSONString().getBytes(Charset.forName("UTF-8"));
+        int contentLength = content.length;
 
         try {
             // 클라이언트에 보낼 response 헤더 설정
             Headers headers = exchange.getResponseHeaders();
             headers.add("Content-Type", "application/json");
             headers.add("Content-Length", String.valueOf(contentLength));
-            exchange.sendResponseHeaders(500, contentLength);
+            exchange.sendResponseHeaders(ERROR_STATUS_CODE, contentLength);
+            exchange.getResponseBody().write(content);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            exchange.close();
         }
         return content;
     }
@@ -234,16 +229,14 @@ public class Server {
      */
     private byte[] makeSuccessResponseHeader(HttpExchange exchange, JSONObject responseJson) throws IOException {
         // 응답 메시지를 바이트 단위로 가공
-        ByteBuffer buffer = Charset.forName("UTF-8").encode(responseJson.toJSONString());
-        int contentLength = buffer.limit();
-        byte[] content = new byte[contentLength];
-        buffer.get(content, 0, contentLength);
+        byte[] content = responseJson.toJSONString().getBytes(Charset.forName("UTF-8"));
+        int contentLength = content.length;
 
         // 클라이언트에 보낼 response 헤더 설정
         Headers headers = exchange.getResponseHeaders();
         headers.add("Content-Type", "application/json");
         headers.add("Content-Length", String.valueOf(contentLength));
-        exchange.sendResponseHeaders(200, contentLength);
+        exchange.sendResponseHeaders(SUCCESS_STATUS_CODE, contentLength);
 
         return content;
     }
